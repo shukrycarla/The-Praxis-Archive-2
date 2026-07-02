@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Praxis Archive</title>
+
+<!-- =====================================================================
+     ✏️  YOUR PAPERS GO HERE — this is the ONLY block you need to edit.
+     =====================================================================
+     This is a blank template. The website will show an "Add your first
+     paper" message until you type at least one paper into the
+     RESEARCH_PAPERS array below. Everything else in this file (styling,
+     search, filtering, card layout) is fully wired up already and updates
+     itself automatically — you never need to touch anything below this
+     block.
+
+     HOW TO ADD A PAPER:
+     1. Copy the whole commented-out example object below (from the first
+        {  down to the matching },  including both braces).
+     2. Paste it inside the square brackets of RESEARCH_PAPERS.
+     3. Delete the /* and */ around your pasted copy to "uncomment" it.
+     4. Replace each placeholder value with your own text.
+     5. Save the file and refresh the page in your browser — done.
+
+     Add as many papers as you like by repeating steps 1–4. Just make
+     sure every paper object is separated from the next by a comma.
+
+     FIELD GUIDE:
+     - id        → any unique number (1, 2, 3…). Just increase by 1 each time.
+     - category  → must be exactly one of:
+                     "Autoimmune Conditions"
+                     "Neurology"
+                     "Immunology"
+                     "Psychology"
+                     "General Medicine"
+                   (this controls which tab and badge color it appears under)
+     - title     → the full title of your paper
+     - date      → any readable date string, e.g. "March 2025"
+     - author    → optional byline, e.g. "Dr. Jane Smith". Leave as "" to hide.
+     - abstract  → a 2–3 sentence summary shown on the card (not used by search)
+     - tags      → a list of short keywords in quotes, separated by commas —
+                   these ARE searchable, along with the title, and are shown
+                   as small chips on the card
+     - pdfUrl    → 🔗 the path or link to your PDF file. Examples:
+                     "papers/my-paper.pdf"                (a file next to this HTML file)
+                     "https://drive.google.com/your-link"  (an external hosted link)
+     - pinned    → true or false (no quotes). Set to true to pin a paper to
+                   the very top of the list, above everything else — handy
+                   for an "Introduction to…" or overview paper you want
+                   readers to see first. Leave as false for normal papers.
+
+     REORDERING PAPERS:
+     Papers display in the same order they appear in this array — top of
+     the array = top of the page. To reorder, just cut and paste a whole
+     paper's { ... } block to a different position in the list. Any paper
+     with pinned: true always floats above all non-pinned papers, no
+     matter where it sits in the array; if more than one paper is pinned,
+     they keep their relative order among themselves.
+     ===================================================================== -->
+<script>
+  const RESEARCH_PAPERS = [
+
+    /*  ---- EXAMPLE — copy this block, uncomment it, and edit the values ----
+
+    {
+      id: 1,
+      category: "Autoimmune Conditions",         // "Autoimmune Conditions" | "Neurology" | "Immunology" | "Psychology" | "General Medicine"
+      title: "Your Paper Title Goes Here",
+      date: "Month Year",
+      author: "",
+      abstract: "Write a 2–3 sentence summary of your paper here.",
+      tags: ["keyword-one", "keyword-two", "keyword-three"],
+      pdfUrl: "papers/your-file-name.pdf",         // 🔗 replace with your real PDF path or link
+      pinned: false                                // set to true to pin this paper to the top
+    },
+
+    ---------------------------------------------------------------------- */
+
+  ];
+</script>
+
+<!-- =====================================================================
+     ✏️  SET YOUR OWN PASSWORD HERE
+     =====================================================================
+     The "+ Add a paper" button is locked behind this password so random
+     visitors can't use it — only someone who knows this password can.
+
+     ⚠️ IMPORTANT — READ THIS:
+     Because this site has no server, this password lives in the page's
+     code, not in a secure database. Anyone who opens their browser's
+     "View Page Source" or developer tools could technically find it.
+     This is a real deterrent against casual visitors, but it is NOT
+     the same as a true login system — don't use a password you use
+     anywhere else, and don't treat this as protecting truly sensitive
+     information.
+
+     TO CHANGE IT: replace the text between the quotes below with a
+     password only you know, then save the file.
+     ===================================================================== -->
+<script>
+  const ADMIN_PASSWORD = "SCarla2026!@"; // 🔒 replace "changeme" with your own password
+</script>
+
+<!-- Google Fonts: Source Serif 4 for headings (clinical/editorial authority), Inter for body & UI (clean, professional) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ============================================================
+     DESIGN TOKENS
+     ============================================================ */
+  :root{
+    /* Color palette — slate/navy clinical academic */
+    --color-bg:            #F7F8FA;   /* page background, near-white slate */
+    --color-surface:       #FFFFFF;   /* card surface */
+    --color-border:        #E2E6EC;   /* hairline borders */
+    --color-border-strong: #C9D0DA;
+    --color-navy:          #10213D;   /* deep navy — headings, header bg */
+    --color-navy-soft:     #1B3358;
+    --color-indigo:        #2F4C82;   /* primary accent — links, buttons */
+    --color-indigo-hover:  #253D69;
+    --color-slate-700:     #3B4657;   /* body text */
+    --color-slate-500:     #6B7684;   /* secondary text */
+    --color-slate-400:     #99A2AF;   /* placeholder / tertiary text */
+
+    /* Category badge colors — muted, clinical, distinguishable */
+    --cat-autoimmune-bg:   #FCEEEA;
+    --cat-autoimmune-fg:   #B34B32;
+    --cat-neurology-bg:    #EAF0FC;
+    --cat-neurology-fg:    #2F4C82;
+    --cat-general-bg:      #EAF6F0;
+    --cat-general-fg:      #2E7D53;
+    --cat-immunology-bg:   #E8F6F6;
+    --cat-immunology-fg:   #147A78;
+    --cat-psychology-bg:   #F3EEFC;
+    --cat-psychology-fg:   #6B46B8;
+
+    /* Type scale */
+    --font-display: 'Source Serif 4', Georgia, serif;
+    --font-body:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+
+    --shadow-card: 0 1px 2px rgba(16,33,61,0.04), 0 4px 16px rgba(16,33,61,0.05);
+    --shadow-card-hover: 0 4px 8px rgba(16,33,61,0.06), 0 12px 28px rgba(16,33,61,0.10);
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    font-family: var(--font-body);
+    background: var(--color-bg);
+    color: var(--color-slate-700);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+  /* Respect reduced motion preferences */
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  a{ color: inherit; text-decoration: none; }
+  button{ font-family: inherit; }
+
+  .wrap{
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ============================================================
+     HEADER / NAV
+     ============================================================ */
+  header.site-header{
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(16, 33, 61, 0.97);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    height: 68px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color: #F5F7FA;
+  }
+  .brand-mark{
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: linear-gradient(155deg, #3A5686, #1B3358);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .brand-mark svg{ width: 18px; height: 18px; }
+  .brand-text{
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .brand-text .thin{ font-weight: 400; opacity: 0.75; }
+
+  .nav-links{
+    display:flex;
+    align-items:center;
+    gap: 28px;
+  }
+  .nav-links a{
+    color: rgba(245,247,250,0.72);
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: color 0.15s ease;
+  }
+  .nav-links a:hover{ color: #fff; }
+  .nav-links a:focus-visible{
+    outline: 2px solid #7A9BD9;
+    outline-offset: 4px;
+    border-radius: 3px;
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .hero{
+    padding: 76px 0 56px;
+    text-align:center;
+    position: relative;
+  }
+  .hero-eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-indigo);
+    background: #EAF0FC;
+    border: 1px solid #D6E1F5;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 22px;
+  }
+  .hero-eyebrow .dot{
+    width:6px; height:6px; border-radius:50%;
+    background: var(--color-indigo);
+    display:inline-block;
+  }
+  h1.hero-title{
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4.2vw, 3rem);
+    font-weight: 600;
+    color: var(--color-navy);
+    line-height: 1.15;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .hero-title em{
+    font-style: italic;
+    color: var(--color-indigo);
+  }
+  p.hero-sub{
+    max-width: 620px;
+    margin: 0 auto;
+    font-size: 1.02rem;
+    color: var(--color-slate-500);
+    line-height: 1.65;
+  }
+
+  /* ============================================================
+     CONTROL CENTER — search + tabs
+     ============================================================ */
+  .control-center{
+    padding: 8px 0 44px;
+  }
+  .search-shell{
+    max-width: 560px;
+    margin: 0 auto 22px;
+    position: relative;
+  }
+  .search-shell svg.search-icon{
+    position:absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px; height: 18px;
+    color: var(--color-slate-400);
+    pointer-events:none;
+  }
+  #searchInput{
+    width:100%;
+    padding: 15px 18px 15px 48px;
+    border-radius: 12px;
+    border: 1.5px solid var(--color-border);
+    background: var(--color-surface);
+    font-size: 0.98rem;
+    font-family: var(--font-body);
+    color: var(--color-navy);
+    box-shadow: var(--shadow-card);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  #searchInput::placeholder{ color: var(--color-slate-400); }
+  #searchInput:focus{
+    outline: none;
+    border-color: var(--color-indigo);
+    box-shadow: 0 0 0 4px rgba(47,76,130,0.10), var(--shadow-card);
+  }
+  .clear-btn{
+    position:absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--color-bg);
+    border: none;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    color: var(--color-slate-500);
+    cursor: pointer;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    font-size: 0.9rem;
+    line-height:1;
+  }
+  .clear-btn.visible{ display:flex; }
+  .clear-btn:hover{ background: var(--color-border); }
+
+  .tabs{
+    display:flex;
+    justify-content:center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tab-btn{
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-slate-500);
+    padding: 9px 18px;
+    border-radius: 100px;
+    font-size: 0.87rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .tab-btn:hover{
+    border-color: var(--color-border-strong);
+    color: var(--color-navy);
+  }
+  .tab-btn.active{
+    background: var(--color-navy);
+    border-color: var(--color-navy);
+    color: #fff;
+  }
+  .tab-btn:focus-visible{
+    outline: 2px solid var(--color-indigo);
+    outline-offset: 2px;
+  }
+
+  /* results meta line */
+  .results-meta{
+    text-align:center;
+    font-size: 0.82rem;
+    color: var(--color-slate-400);
+    font-family: var(--font-mono);
+    margin-top: 22px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ============================================================
+     ADD PAPER — trigger button + modal form
+     ============================================================ */
+  .add-paper-row{
+    display:flex;
+    justify-content:center;
+    margin-top: 18px;
+  }
+  .add-paper-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background: transparent;
+    border: 1.5px dashed var(--color-border-strong);
+    color: var(--color-indigo);
+    font-size: 0.86rem;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 100px;
+    cursor:pointer;
+    transition: all 0.15s ease;
+  }
+  .add-paper-btn:hover{
+    border-color: var(--color-indigo);
+    background: #F2F5FB;
+  }
+  .add-paper-btn svg{ width:15px; height:15px; }
+
+  .modal-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(16,33,61,0.45);
+    backdrop-filter: blur(2px);
+    display:none;
+    align-items:flex-start;
+    justify-content:center;
+    padding: 40px 20px;
+    overflow-y: auto;
+    z-index: 100;
+  }
+  .modal-overlay.open{ display:flex; }
+
+  .modal-box{
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 560px;
+    box-shadow: 0 20px 60px rgba(16,33,61,0.25);
+    overflow: hidden;
+  }
+  .modal-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .modal-header h3{
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--color-navy);
+    margin:0;
+  }
+  .modal-close{
+    background: var(--color-bg);
+    border:none;
+    width:30px; height:30px;
+    border-radius:50%;
+    cursor:pointer;
+    color: var(--color-slate-500);
+    font-size: 1rem;
+  }
+  .modal-close:hover{ background: var(--color-border); }
+
+  .modal-body{ padding: 22px 24px 26px; }
+
+  .modal-body label{
+    display:block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-navy);
+    margin-bottom: 14px;
+  }
+  .modal-body label .hint{
+    font-weight: 400;
+    color: var(--color-slate-400);
+    font-size: 0.78rem;
+  }
+  .modal-body input[type="text"],
+  .modal-body select,
+  .modal-body textarea{
+    display:block;
+    width:100%;
+    margin-top: 6px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--color-border);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--color-slate-700);
+    background: var(--color-bg);
+  }
+  .modal-body input:focus,
+  .modal-body select:focus,
+  .modal-body textarea:focus{
+    outline:none;
+    border-color: var(--color-indigo);
+    background: #fff;
+  }
+  .modal-body textarea{ resize: vertical; font-family: var(--font-body); }
+
+  .modal-body label.checkbox-label{
+    display:flex;
+    align-items:flex-start;
+    gap: 9px;
+    font-weight: 500;
+    background: var(--color-bg);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 11px 12px;
+  }
+  .modal-body label.checkbox-label input[type="checkbox"]{
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    accent-color: var(--color-indigo);
+    flex-shrink: 0;
+  }
+
+  .field-error{
+    display:none;
+    color: #B34B32;
+    font-size: 0.76rem;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+  .field-error.visible{ display:block; }
+
+  /* Password gate modal (shown before Add Paper form) */
+  .lock-icon-wrap{
+    display:flex;
+    justify-content:center;
+    margin-bottom: 6px;
+  }
+  .lock-icon-wrap svg{
+    width: 34px; height: 34px;
+    color: var(--color-indigo);
+  }
+  .modal-body p.gate-copy{
+    text-align:center;
+    font-size: 0.86rem;
+    color: var(--color-slate-500);
+    margin: 0 0 18px;
+    line-height: 1.5;
+  }
+  #gatePassword{
+    text-align:center;
+    letter-spacing: 0.05em;
+  }
+
+  .generate-btn{
+    width:100%;
+    background: var(--color-navy);
+    color:#fff;
+    border:none;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor:pointer;
+    margin-top: 4px;
+  }
+  .generate-btn:hover{ background: var(--color-indigo-hover); }
+
+  .modal-instructions{
+    font-size: 0.86rem;
+    color: var(--color-slate-500);
+    line-height:1.55;
+    margin: 0 0 14px;
+  }
+  .modal-instructions code{
+    font-family: var(--font-mono);
+    background: var(--color-bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+  .code-output{
+    width:100%;
+    min-height: 220px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height:1.6;
+    color: var(--color-navy);
+    background: var(--color-bg);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    resize: vertical;
+    margin-bottom: 12px;
+  }
+  .text-link-btn{
+    display:block;
+    width:100%;
+    text-align:center;
+    background:none;
+    border:none;
+    color: var(--color-slate-500);
+    font-size: 0.84rem;
+    padding: 10px;
+    cursor:pointer;
+  }
+  .text-link-btn:hover{ color: var(--color-navy); }
+
+  .copy-confirm{
+    display:none;
+    text-align:center;
+    color: #2E7D53;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin: -4px 0 12px;
+  }
+  .copy-confirm.visible{ display:block; }
+
+  /* ============================================================
+     PAPER GRID / CARDS
+     ============================================================ */
+  main.content{
+    padding: 8px 0 100px;
+  }
+  .paper-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 22px;
+  }
+
+  .paper-card{
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 26px 24px 22px;
+    display:flex;
+    flex-direction:column;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    position: relative;
+  }
+  .paper-card:hover{
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: var(--color-border-strong);
+  }
+  .paper-card--pinned{
+    border-color: #D6C9A8;
+    background: linear-gradient(180deg, #FFFDF8 0%, var(--color-surface) 70px);
+  }
+  .pin-flag{
+    position:absolute;
+    top: -10px;
+    left: 20px;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    background: #B8863B;
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 100px;
+    box-shadow: 0 2px 6px rgba(184,134,59,0.35);
+  }
+  .pin-flag svg{ width:10px; height:10px; }
+
+  .card-top-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 14px;
+  }
+
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 5px 11px;
+    border-radius: 100px;
+  }
+  .badge-autoimmune{ background: var(--cat-autoimmune-bg); color: var(--cat-autoimmune-fg); }
+  .badge-neurology{  background: var(--cat-neurology-bg);  color: var(--cat-neurology-fg); }
+  .badge-general{    background: var(--cat-general-bg);    color: var(--cat-general-fg); }
+  .badge-immunology{ background: var(--cat-immunology-bg); color: var(--cat-immunology-fg); }
+  .badge-psychology{ background: var(--cat-psychology-bg); color: var(--cat-psychology-fg); }
+
+  .card-date{
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--color-slate-400);
+  }
+
+  h3.card-title{
+    font-family: var(--font-display);
+    font-size: 1.18rem;
+    font-weight: 600;
+    color: var(--color-navy);
+    line-height: 1.35;
+    margin: 0 0 10px;
+  }
+
+  p.card-abstract{
+    font-size: 0.9rem;
+    color: var(--color-slate-500);
+    line-height: 1.6;
+    margin: 0 0 18px;
+    flex-grow: 1;
+  }
+
+  .card-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .tag-chip{
+    font-size: 0.72rem;
+    color: var(--color-slate-500);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    padding: 3px 9px;
+    border-radius: 6px;
+  }
+
+  .card-footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+  }
+  .card-author{
+    font-size: 0.78rem;
+    color: var(--color-slate-400);
+  }
+
+  .read-btn{
+    display:inline-flex;
+    align-items:center;
+    gap: 7px;
+    background: var(--color-navy);
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+  .read-btn:hover{ background: var(--color-indigo-hover); }
+  .read-btn:active{ transform: scale(0.98); }
+  .read-btn svg{ width:14px; height:14px; }
+
+  /* empty state */
+  .empty-state{
+    text-align:center;
+    padding: 80px 20px;
+    color: var(--color-slate-400);
+  }
+  .empty-state svg{ width: 44px; height:44px; margin-bottom: 16px; opacity:0.5; }
+  .empty-state h4{
+    font-family: var(--font-display);
+    color: var(--color-navy);
+    font-size: 1.15rem;
+    margin: 0 0 6px;
+  }
+  .empty-state p{ font-size: 0.9rem; margin:0; }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  footer.site-footer{
+    border-top: 1px solid var(--color-border);
+    padding: 30px 0;
+    text-align:center;
+    font-size: 0.8rem;
+    color: var(--color-slate-400);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 640px){
+    .nav-links{ gap: 16px; }
+    .nav-links a span.full{ display:none; }
+    .hero{ padding: 52px 0 40px; }
+    .paper-grid{ grid-template-columns: 1fr; }
+    .wrap{ padding: 0 18px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <header class="site-header">
+    <div class="wrap nav-inner">
+      <div class="brand">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L3 7v6c0 5 4 8.5 9 9 5-.5 9-4 9-9V7l-9-5z" stroke="#EAF0FC" stroke-width="1.4" stroke-linejoin="round"/>
+            <path d="M9 12l2 2 4-4" stroke="#EAF0FC" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="brand-text">The Praxis <span class="thin">Archive</span></span>
+      </div>
+      <nav class="nav-links">
+        <a href="#papers"><span class="full">Research </span>Papers</a>
+        <a href="#about">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <section class="hero" id="about">
+    <div class="wrap">
+      <span class="hero-eyebrow"><span class="dot"></span>Independent Research Archive</span>
+      <h1 class="hero-title">Where theory<br><em>meets practice.</em></h1>
+      <p class="hero-sub">
+        A living archive of independent research in autoimmune conditions, neurology, psychology, immunology, and general medicine.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CONTROL CENTER — Search + Category Tabs
+       ============================================================ -->
+  <section class="control-center">
+    <div class="wrap">
+      <div class="search-shell">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+          <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search papers by title or tag…" autocomplete="off">
+        <button class="clear-btn" id="clearSearchBtn" aria-label="Clear search">✕</button>
+      </div>
+
+      <div class="tabs" id="tabsContainer" role="tablist" aria-label="Filter by category">
+        <!-- Tab buttons are rendered by JS from CATEGORIES array below -->
+      </div>
+
+      <p class="results-meta" id="resultsMeta"></p>
+
+      <div class="add-paper-row">
+        <button class="add-paper-btn" id="openAddPaperBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Add a paper
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PAPER GRID
+       ============================================================ -->
+  <main class="content" id="papers">
+    <div class="wrap">
+      <div class="paper-grid" id="paperGrid">
+        <!-- Paper cards are rendered here by JS -->
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      © <span id="year"></span> The Praxis Archive. Independent research, published for transparency and peer review.
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       PASSWORD GATE MODAL
+       Shown before the Add Paper form. Requires ADMIN_PASSWORD
+       (set near the top of this file) to proceed.
+       ============================================================ -->
+  <div class="modal-overlay" id="passwordGateModal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="gateModalTitle" style="max-width: 380px;">
+      <div class="modal-header">
+        <h3 id="gateModalTitle">Owner access only</h3>
+        <button class="modal-close" id="closeGateBtn" type="button" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="lock-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M8 11V7a4 4 0 018 0v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p class="gate-copy">Enter the password to add a new paper.</p>
+        <label>Password
+          <input type="password" id="gatePassword" placeholder="••••••••" autocomplete="off">
+        </label>
+        <p class="field-error" id="gateError">Incorrect password. Please try again.</p>
+        <button class="generate-btn" id="submitGateBtn" type="button">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ADD PAPER MODAL
+       Fill out this form and it writes the correctly-formatted code
+       for you — no typing braces, quotes, or commas by hand.
+       ============================================================ -->
+  <div class="modal-overlay" id="addPaperModal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add a new paper</h3>
+        <button class="modal-close" id="closeAddPaperBtn" type="button" aria-label="Close">✕</button>
+      </div>
+
+      <!-- STEP 1: the form -->
+      <div class="modal-body" id="modalFormView">
+        <label>Title
+          <input type="text" id="fTitle" placeholder="e.g. Reassessing Diagnostic Latency in Early-Stage Hashimoto's Thyroiditis">
+        </label>
+        <label>Category
+          <select id="fCategory">
+            <option value="Autoimmune Conditions">Autoimmune Conditions</option>
+            <option value="Neurology">Neurology</option>
+            <option value="Immunology">Immunology</option>
+            <option value="Psychology">Psychology</option>
+            <option value="General Medicine">General Medicine</option>
+          </select>
+        </label>
+        <label>Date <span class="hint">— any format, e.g. "March 2025"</span>
+          <input type="text" id="fDate" placeholder="March 2025">
+        </label>
+        <label>Author <span class="hint">— optional</span>
+          <input type="text" id="fAuthor" placeholder="Dr. Jane Smith">
+        </label>
+        <label>Abstract <span class="hint">— 2–3 sentence summary</span>
+          <textarea id="fAbstract" rows="3" placeholder="Write a short summary of the paper here..."></textarea>
+        </label>
+        <label>Tags <span class="hint">— separate with commas</span>
+          <input type="text" id="fTags" placeholder="thyroid, autoimmune, diagnostics">
+        </label>
+        <label>PDF file path or link
+          <input type="text" id="fPdf" placeholder="papers/my-paper.pdf  or  https://drive.google.com/...">
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="fPinned">
+          Pin to top <span class="hint">— keeps this paper above all others, e.g. an "Introduction to…" paper</span>
+        </label>
+        <p class="field-error" id="formError">Please fill in at least the title and abstract before generating.</p>
+        <button class="generate-btn" id="generateCodeBtn" type="button">Generate code →</button>
+      </div>
+
+      <!-- STEP 2: the generated code, shown after clicking Generate -->
+      <div class="modal-body" id="modalCodeView" style="display:none;">
+        <p class="modal-instructions">
+          Copy the code below, then open <code>index.html</code> in a text editor, paste it
+          inside the <code>RESEARCH_PAPERS</code> array near the very top of the file
+          (just above the commented-out example), save, and refresh this page.
+        </p>
+        <textarea class="code-output" id="generatedCode" readonly></textarea>
+        <p class="copy-confirm" id="copyConfirm">Copied to clipboard ✓</p>
+        <button class="generate-btn" id="copyCodeBtn" type="button">Copy code</button>
+        <button class="text-link-btn" id="backToFormBtn" type="button">← Edit details again</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /* =====================================================================
+     Category tab configuration — edit labels here only if you rename
+     a category above. Order here controls the order tabs are displayed.
+     (RESEARCH_PAPERS itself lives in the editable block at the very top
+     of this file, inside <head>.)
+     ===================================================================== */
+  const CATEGORIES = ["All", "Autoimmune Conditions", "Neurology", "Immunology", "Psychology", "General Medicine"];
+
+  /* Maps a category name to its badge CSS class + short label used in the UI */
+  const CATEGORY_STYLE = {
+    "Autoimmune Conditions": { badgeClass: "badge-autoimmune" },
+    "Neurology":             { badgeClass: "badge-neurology" },
+    "Immunology":            { badgeClass: "badge-immunology" },
+    "Psychology":            { badgeClass: "badge-psychology" },
+    "General Medicine":      { badgeClass: "badge-general" }
+  };
+
+  /* =====================================================================
+     APP STATE
+     ===================================================================== */
+  let activeCategory = "All";
+  let searchQuery = "";
+
+  /* =====================================================================
+     RENDER: Category Tabs
+     ===================================================================== */
+  const tabsContainer = document.getElementById("tabsContainer");
+
+  function renderTabs(){
+    tabsContainer.innerHTML = "";
+    CATEGORIES.forEach(cat => {
+      const btn = document.createElement("button");
+      btn.className = "tab-btn" + (cat === activeCategory ? " active" : "");
+      btn.textContent = cat;
+      btn.setAttribute("role", "tab");
+      btn.setAttribute("aria-selected", cat === activeCategory ? "true" : "false");
+      btn.addEventListener("click", () => {
+        activeCategory = cat;
+        renderTabs();
+        renderPapers();
+      });
+      tabsContainer.appendChild(btn);
+    });
+  }
+
+  /* =====================================================================
+     FILTER LOGIC — combines active tab + live search query
+     ===================================================================== */
+  function getFilteredPapers(){
+    const q = searchQuery.trim().toLowerCase();
+
+    const filtered = RESEARCH_PAPERS.filter(paper => {
+      const matchesCategory = activeCategory === "All" || paper.category === activeCategory;
+      if (!matchesCategory) return false;
+
+      if (q === "") return true;
+
+      const haystack = [
+        paper.title,
+        ...(paper.tags || [])
+      ].join(" ").toLowerCase();
+
+      return haystack.includes(q);
+    });
+
+    // Pinned papers float to the top, above everything else. Array.sort is
+    // stable in modern browsers, so papers within each group (pinned /
+    // not pinned) keep the relative order they already had.
+    return filtered.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+  }
+
+  /* =====================================================================
+     RENDER: Paper Cards
+     ===================================================================== */
+  const paperGrid = document.getElementById("paperGrid");
+  const resultsMeta = document.getElementById("resultsMeta");
+
+  function escapeHtml(str){
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderPapers(){
+    const filtered = getFilteredPapers();
+
+    // Case 1: no papers have been added to RESEARCH_PAPERS at all yet
+    if (RESEARCH_PAPERS.length === 0){
+      resultsMeta.textContent = "";
+      paperGrid.innerHTML = `
+        <div class="empty-state" style="grid-column: 1 / -1;">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 12h6M9 16h6M9 8h2M7 3h7l4 4v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h4>No papers added yet</h4>
+          <p>Open this file and add your first paper to the RESEARCH_PAPERS array at the top of the code.</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Results counter line
+    const countLabel = filtered.length === 1 ? "paper" : "papers";
+    resultsMeta.textContent = `${filtered.length} ${countLabel} found`;
+
+    // Case 2: papers exist, but none match the current search/filter
+    if (filtered.length === 0){
+      paperGrid.innerHTML = `
+        <div class="empty-state" style="grid-column: 1 / -1;">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <h4>No matching papers</h4>
+          <p>Try a different search term or category.</p>
+        </div>
+      `;
+      return;
+    }
+
+    paperGrid.innerHTML = filtered.map(paper => {
+      const style = CATEGORY_STYLE[paper.category] || { badgeClass: "badge-general" };
+      const tagsHtml = (paper.tags || [])
+        .map(tag => `<span class="tag-chip">${escapeHtml(tag)}</span>`)
+        .join("");
+
+      return `
+        <article class="paper-card${paper.pinned ? " paper-card--pinned" : ""}">
+          ${paper.pinned ? `
+          <span class="pin-flag">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2l2.5 6.5L21 10l-5 4.5L17.5 22 12 18l-5.5 4L8 14.5 3 10l6.5-1.5L12 2z" fill="currentColor"/>
+            </svg>
+            Pinned
+          </span>` : ""}
+          <div class="card-top-row">
+            <span class="badge ${style.badgeClass}">${escapeHtml(paper.category)}</span>
+            <span class="card-date">${escapeHtml(paper.date)}</span>
+          </div>
+          <h3 class="card-title">${escapeHtml(paper.title)}</h3>
+          <p class="card-abstract">${escapeHtml(paper.abstract)}</p>
+          <div class="card-tags">${tagsHtml}</div>
+          <div class="card-footer">
+            <span class="card-author">${paper.author ? escapeHtml(paper.author) : "&nbsp;"}</span>
+            <a href="${escapeHtml(paper.pdfUrl)}" target="_blank" rel="noopener noreferrer" class="read-btn">
+              View PDF
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  /* =====================================================================
+     SEARCH INPUT WIRING (live filtering as the user types)
+     ===================================================================== */
+  const searchInput = document.getElementById("searchInput");
+  const clearSearchBtn = document.getElementById("clearSearchBtn");
+
+  searchInput.addEventListener("input", (e) => {
+    searchQuery = e.target.value;
+    clearSearchBtn.classList.toggle("visible", searchQuery.length > 0);
+    renderPapers();
+  });
+
+  clearSearchBtn.addEventListener("click", () => {
+    searchQuery = "";
+    searchInput.value = "";
+    clearSearchBtn.classList.remove("visible");
+    searchInput.focus();
+    renderPapers();
+  });
+
+  /* =====================================================================
+     ADD PAPER MODAL — turns the form into ready-to-paste code so you
+     never have to type JavaScript syntax (braces, quotes, commas) by hand.
+     ===================================================================== */
+  const addPaperModal   = document.getElementById("addPaperModal");
+  const openAddPaperBtn = document.getElementById("openAddPaperBtn");
+  const closeAddPaperBtn= document.getElementById("closeAddPaperBtn");
+  const modalFormView   = document.getElementById("modalFormView");
+  const modalCodeView   = document.getElementById("modalCodeView");
+  const generateCodeBtn = document.getElementById("generateCodeBtn");
+  const backToFormBtn   = document.getElementById("backToFormBtn");
+  const copyCodeBtn     = document.getElementById("copyCodeBtn");
+  const generatedCode   = document.getElementById("generatedCode");
+  const copyConfirm     = document.getElementById("copyConfirm");
+  const formError       = document.getElementById("formError");
+
+  // Password gate elements
+  const passwordGateModal = document.getElementById("passwordGateModal");
+  const closeGateBtn      = document.getElementById("closeGateBtn");
+  const gatePasswordInput = document.getElementById("gatePassword");
+  const gateError         = document.getElementById("gateError");
+  const submitGateBtn     = document.getElementById("submitGateBtn");
+
+  // Stays true only for the current page visit — reloading the page
+  // will ask for the password again.
+  let isUnlocked = false;
+
+  function openModal(){
+    addPaperModal.classList.add("open");
+    addPaperModal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal(){
+    addPaperModal.classList.remove("open");
+    addPaperModal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    // reset back to the form view for next time
+    modalCodeView.style.display = "none";
+    modalFormView.style.display = "block";
+    formError.classList.remove("visible");
+  }
+
+  function openGate(){
+    gatePasswordInput.value = "";
+    gateError.classList.remove("visible");
+    passwordGateModal.classList.add("open");
+    passwordGateModal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    setTimeout(() => gatePasswordInput.focus(), 50);
+  }
+  function closeGate(){
+    passwordGateModal.classList.remove("open");
+    passwordGateModal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+  function attemptUnlock(){
+    if (gatePasswordInput.value === ADMIN_PASSWORD){
+      isUnlocked = true;
+      closeGate();
+      openModal();
+    } else {
+      gateError.classList.add("visible");
+      gatePasswordInput.value = "";
+      gatePasswordInput.focus();
+    }
+  }
+
+  // Clicking "+ Add a paper" opens the password gate first (unless
+  // already unlocked earlier in this same page visit).
+  openAddPaperBtn.addEventListener("click", () => {
+    if (isUnlocked){
+      openModal();
+    } else {
+      openGate();
+    }
+  });
+
+  closeGateBtn.addEventListener("click", closeGate);
+  passwordGateModal.addEventListener("click", (e) => {
+    if (e.target === passwordGateModal) closeGate();
+  });
+  submitGateBtn.addEventListener("click", attemptUnlock);
+  gatePasswordInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") attemptUnlock();
+  });
+
+  closeAddPaperBtn.addEventListener("click", closeModal);
+  addPaperModal.addEventListener("click", (e) => {
+    if (e.target === addPaperModal) closeModal(); // click outside the box closes it
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && addPaperModal.classList.contains("open")) closeModal();
+    if (e.key === "Escape" && passwordGateModal.classList.contains("open")) closeGate();
+  });
+
+  // Turns arbitrary user text into a safe JavaScript string literal
+  // (handles quotation marks, backslashes, and line breaks automatically).
+  function toJsString(value){
+    return JSON.stringify(value == null ? "" : String(value).trim());
+  }
+
+  generateCodeBtn.addEventListener("click", () => {
+    const title    = document.getElementById("fTitle").value;
+    const category = document.getElementById("fCategory").value;
+    const date     = document.getElementById("fDate").value;
+    const author   = document.getElementById("fAuthor").value;
+    const abstract = document.getElementById("fAbstract").value;
+    const tagsRaw  = document.getElementById("fTags").value;
+    const pdfUrl   = document.getElementById("fPdf").value;
+    const pinned   = document.getElementById("fPinned").checked;
+
+    if (!title.trim() || !abstract.trim()){
+      formError.classList.add("visible");
+      return;
+    }
+    formError.classList.remove("visible");
+
+    // Split comma-separated tags into a clean array of individual strings
+    const tags = tagsRaw.split(",").map(t => t.trim()).filter(Boolean);
+    const tagsJs = tags.length
+      ? "[" + tags.map(toJsString).join(", ") + "]"
+      : '["your-keyword-here"]';
+
+    // Next available id = highest existing id + 1 (so it never collides
+    // with a paper you already added)
+    const nextId = RESEARCH_PAPERS.length
+      ? Math.max(...RESEARCH_PAPERS.map(p => p.id || 0)) + 1
+      : 1;
+
+    const code =
+`{
+  id: ${nextId},
+  category: ${toJsString(category)},
+  title: ${toJsString(title)},
+  date: ${toJsString(date || "Month Year")},
+  author: ${toJsString(author)},
+  abstract: ${toJsString(abstract)},
+  tags: ${tagsJs},
+  pdfUrl: ${toJsString(pdfUrl || "papers/your-file-name.pdf")},
+  pinned: ${pinned}
+},`;
+
+    generatedCode.value = code;
+    modalFormView.style.display = "none";
+    modalCodeView.style.display = "block";
+    copyConfirm.classList.remove("visible");
+  });
+
+  backToFormBtn.addEventListener("click", () => {
+    modalCodeView.style.display = "none";
+    modalFormView.style.display = "block";
+  });
+
+  copyCodeBtn.addEventListener("click", async () => {
+    try{
+      await navigator.clipboard.writeText(generatedCode.value);
+    } catch(err){
+      // Fallback for browsers that block clipboard access
+      generatedCode.select();
+      document.execCommand("copy");
+    }
+    copyConfirm.classList.add("visible");
+  });
+
+  /* =====================================================================
+     INIT
+     ===================================================================== */
+  document.getElementById("year").textContent = new Date().getFullYear();
+  renderTabs();
+  renderPapers();
+</script>
+
+</body>
+</html>
